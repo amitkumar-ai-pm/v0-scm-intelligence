@@ -226,9 +226,9 @@ const Page = () => {
           <section>
             <h2 className="mb-4 text-xl font-semibold text-foreground">Today's Critical Actions</h2>
             <div className="relative">
-              <div className="rounded-xl border border-orange-200/50 bg-gradient-to-br from-orange-50/50 to-rose-50/50 p-6 backdrop-blur-sm">
+              <div className="rounded-xl border border-primary/30 bg-gradient-to-r from-primary/15 via-accent/10 to-primary/15 p-6 backdrop-blur-sm">
                 <div className="flex items-start gap-4">
-                  <AlertCircle className="h-5 w-5 flex-shrink-0 text-orange-600 mt-1" />
+                  <AlertCircle className="h-5 w-5 flex-shrink-0 text-primary mt-1" />
                   <div className="flex-1">
                     <h3 className="font-semibold text-foreground text-base">{criticalActions[activeActionIndex].title}</h3>
                     <p className="mt-1 text-sm text-foreground/80">{criticalActions[activeActionIndex].description}</p>
@@ -408,20 +408,19 @@ const Page = () => {
 
           {/* Chat Input - Top */}
           <div className="rounded-xl border border-border/30 bg-card/50 backdrop-blur-sm p-4">
-            <form onSubmit={handleChatSubmit} className="flex flex-col gap-3">
+            <form onSubmit={handleChatSubmit} className="flex items-center gap-2">
               <input
                 type="text"
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
                 placeholder="Ask anything..."
-                className="w-full rounded-lg border border-border/50 bg-background/50 px-4 py-3 text-xs placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                className="flex-1 rounded-lg border border-border/50 bg-background/50 px-4 py-3 text-xs placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
               />
               <button
                 type="submit"
-                className="w-full rounded-lg bg-gradient-to-r from-primary to-accent px-3 py-2 text-white hover:shadow-lg transition-all flex items-center justify-center gap-2 text-xs font-semibold"
+                className="rounded-lg bg-gradient-to-r from-primary to-accent p-2 text-white hover:shadow-lg transition-all flex items-center justify-center text-xs font-semibold flex-shrink-0"
               >
-                <Send className="h-3 w-3" />
-                Send
+                <Send className="h-4 w-4" />
               </button>
             </form>
           </div>
