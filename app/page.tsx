@@ -47,6 +47,7 @@ const Page = () => {
       title: 'Manufacturing',
       color: 'from-blue-600 to-blue-700',
       icon: '🏭',
+      source: 'Reuters',
       metrics: [
         { label: 'Nearshoring', value: '+23%', subtext: 'YoY' },
         { label: 'Automation', value: '+18%', subtext: 'Investment' },
@@ -58,6 +59,7 @@ const Page = () => {
       title: 'Logistics',
       color: 'from-teal-600 to-cyan-700',
       icon: '🚚',
+      source: 'Bloomberg',
       metrics: [
         { label: 'Port Delays', value: '-15%', subtext: 'Improving' },
         { label: 'Warehouse Util.', value: '78%', subtext: 'Capacity' },
@@ -69,6 +71,7 @@ const Page = () => {
       title: 'Retail',
       color: 'from-orange-600 to-orange-700',
       icon: '🛍️',
+      source: 'McKinsey',
       metrics: [
         { label: 'Inventory', value: 'Normal', subtext: 'Levels' },
         { label: 'Stockouts', value: '-8%', subtext: 'Declining' },
@@ -80,6 +83,7 @@ const Page = () => {
       title: 'Technology',
       color: 'from-purple-600 to-purple-700',
       icon: '⚙️',
+      source: 'TechCrunch',
       metrics: [
         { label: 'AI Adoption', value: '+34%', subtext: 'Forecasting' },
         { label: 'Blockchain', value: '+28%', subtext: 'Tracking' },
@@ -91,6 +95,7 @@ const Page = () => {
       title: 'FMCG',
       color: 'from-rose-600 to-pink-700',
       icon: '📦',
+      source: 'Supply Chain Dive',
       metrics: [
         { label: 'Cold Chain Risk', value: 'High', subtext: 'Alert' },
         { label: 'Sustainability', value: '+22%', subtext: 'Packaging' },
@@ -102,6 +107,7 @@ const Page = () => {
       title: 'Warehousing',
       color: 'from-amber-600 to-yellow-700',
       icon: '🏢',
+      source: 'Logistics Journal',
       metrics: [
         { label: 'Capacity Util.', value: '82%', subtext: 'Usage' },
         { label: 'Automation', value: '+25%', subtext: 'Growth' },
@@ -313,9 +319,11 @@ const Page = () => {
                   className="rounded-xl border border-border/30 bg-card/50 backdrop-blur-sm overflow-hidden shadow-md transition-all hover:shadow-lg"
                 >
                   {/* Colored Header */}
-                  <div className={`bg-gradient-to-r ${trend.color} p-4 flex items-center gap-3`}>
-                    <span className="text-2xl">{trend.icon}</span>
-                    <h3 className="font-bold text-white text-base">{trend.title}</h3>
+                  <div className={`bg-gradient-to-r ${trend.color} p-4 flex items-center justify-between`}>
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">{trend.icon}</span>
+                      <h3 className="font-bold text-white text-base">{trend.title}</h3>
+                    </div>
                   </div>
                   
                   {/* Text-only Body */}
@@ -327,6 +335,10 @@ const Page = () => {
                         <p className="text-muted-foreground text-xs">{metric.subtext}</p>
                       </div>
                     ))}
+                    {/* Source Info */}
+                    <div className="pt-2 border-t border-border/20">
+                      <p className="text-xs text-primary font-medium">{trend.source}</p>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -382,17 +394,16 @@ const Page = () => {
 
         {/* Chat Sidebar - Right Side */}
         <aside className="w-80 hidden lg:flex flex-col gap-4">
-          {/* Chat Button */}
+          {/* Chat Button - More Visible */}
           <button
             onClick={() => setIsChatOpen(!isChatOpen)}
-            className="flex items-center gap-3 w-full rounded-xl border border-primary/30 bg-gradient-to-br from-primary/10 to-accent/5 px-5 py-4 text-left hover:bg-primary/15 transition-colors"
+            className="flex items-center gap-3 w-full rounded-xl border-0 bg-gradient-to-r from-primary to-accent px-5 py-4 text-left hover:shadow-lg transition-all text-white"
           >
-            <MessageSquare className="h-5 w-5 text-primary flex-shrink-0" />
+            <MessageSquare className="h-5 w-5 flex-shrink-0" />
             <div className="flex-1 min-w-0">
-              <p className="font-semibold text-sm text-foreground">Ask AI</p>
-              <p className="text-xs text-muted-foreground truncate">New conversation</p>
+              <p className="font-semibold text-sm">SCM Assistant</p>
             </div>
-            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            <ChevronRight className="h-4 w-4" />
           </button>
 
           {/* Chat Input - Top */}
