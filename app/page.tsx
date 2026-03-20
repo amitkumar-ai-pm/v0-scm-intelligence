@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronDown, ChevronRight, Send, AlertCircle, Activity, Zap, Globe, MessageSquare, Archive, Eye, EyeOff, User, Bell } from 'lucide-react'
+import { ChevronDown, ChevronRight, Send, AlertCircle, Activity, Zap, Globe, MessageSquare, Archive, Eye, EyeOff, User, Bell, Download } from 'lucide-react'
 
 const Page = () => {
   const [expandedNews, setExpandedNews] = useState<string | null>(null)
@@ -188,6 +188,26 @@ const Page = () => {
     setActiveActionIndex((prev) => (prev - 1 + criticalActions.length) % criticalActions.length)
   }
 
+  const downloadPDF = async () => {
+    const element = document.getElementById('dashboard-content')
+    if (!element) return
+
+    const script = document.createElement('script')
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js'
+    script.onload = () => {
+      const opt = {
+        margin: 10,
+        filename: 'Supply_Chain_Intelligence_Dashboard.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' },
+      }
+      // @ts-ignore
+      html2pdf().set(opt).from(element).save()
+    }
+    document.head.appendChild(script)
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5 text-foreground">
       {/* Premium Header */}
@@ -199,6 +219,9 @@ const Page = () => {
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-4xl font-bold tracking-tight text-foreground">Supply Chain Intelligence</h1>
             <div className="flex items-center gap-3">
+              <button onClick={downloadPDF} className="p-2 hover:bg-muted rounded-lg transition-colors text-muted-foreground hover:text-foreground" title="Download as PDF">
+                <Download className="h-5 w-5" />
+              </button>
               <button className="p-2 hover:bg-muted rounded-lg transition-colors text-muted-foreground hover:text-foreground" title="Notifications">
                 <Bell className="h-5 w-5" />
               </button>
@@ -215,7 +238,7 @@ const Page = () => {
 
       <main className="flex gap-6 px-6 py-8">
         {/* Main Content - Left Side */}
-        <div className="flex-1 space-y-8">
+        <div id="dashboard-content" className="flex-1 space-y-8">
           {/* Critical Actions - Scrollable Carousel */}
           <section>
             <h2 className="mb-4 text-xl font-semibold text-foreground">Today's Critical Actions</h2>
