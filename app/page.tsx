@@ -1,12 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronDown, ChevronRight, Send, AlertCircle, Activity, Zap, Globe, MessageSquare, Archive, Eye, EyeOff, User, Bell, Download } from 'lucide-react'
+import { ChevronDown, ChevronRight, Send, AlertCircle, Activity, Zap, Globe, MessageSquare, Archive, User, Bell, Download } from 'lucide-react'
 
 const Page = () => {
   const [expandedNews, setExpandedNews] = useState<string | null>(null)
   const [chatInput, setChatInput] = useState('')
-  const [showKPI, setShowKPI] = useState(true)
   const [activeActionIndex, setActiveActionIndex] = useState(0)
   const [isChatOpen, setIsChatOpen] = useState(false)
 
@@ -32,13 +31,6 @@ const Page = () => {
       priority: 'medium',
       timestamp: '6h ago',
     },
-  ]
-
-  const kpiMetrics = [
-    { label: 'Supply Chain Health', value: '78%', trend: '+5%', color: 'bg-gradient-to-br from-emerald-500 to-teal-600', icon: Activity },
-    { label: 'Cost Optimization', value: '12.3%', trend: '-2.1%', color: 'bg-gradient-to-br from-blue-500 to-cyan-600', icon: Zap },
-    { label: 'Global Coverage', value: '45', trend: '+3', color: 'bg-gradient-to-br from-orange-500 to-rose-600', icon: Globe },
-    { label: 'Risk Events', value: '8', trend: '-4', color: 'bg-gradient-to-br from-purple-500 to-pink-600', icon: AlertCircle },
   ]
 
   const trends = [
@@ -359,51 +351,6 @@ const Page = () => {
             </div>
           </section>
 
-          {/* KPI Cards - Smaller, Collapsible */}
-          {showKPI && (
-            <section>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-foreground">Key Performance Indicators</h2>
-                <button
-                  onClick={() => setShowKPI(false)}
-                  className="p-2 hover:bg-muted rounded-lg transition-colors text-muted-foreground hover:text-foreground"
-                  title="Hide KPI Cards"
-                >
-                  <EyeOff className="h-4 w-4" />
-                </button>
-              </div>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                {kpiMetrics.map((metric) => {
-                  const Icon = metric.icon
-                  return (
-                    <div
-                      key={metric.label}
-                      className={`${metric.color} rounded-lg p-5 text-white shadow-md transition-all hover:shadow-lg hover:scale-105`}
-                    >
-                      <div className="flex items-center justify-between mb-3">
-                        <Icon className="h-5 w-5 opacity-80" />
-                        <span className={`text-xs font-semibold ${metric.trend.startsWith('+') ? 'text-emerald-200' : 'text-green-200'}`}>
-                          {metric.trend}
-                        </span>
-                      </div>
-                      <p className="text-xs font-medium opacity-90">{metric.label}</p>
-                      <p className="mt-2 text-2xl font-bold">{metric.value}</p>
-                    </div>
-                  )
-                })}
-              </div>
-            </section>
-          )}
-
-          {!showKPI && (
-            <button
-              onClick={() => setShowKPI(true)}
-              className="w-full py-3 rounded-lg border border-dashed border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors text-sm font-medium flex items-center justify-center gap-2"
-            >
-              <Eye className="h-4 w-4" />
-              Show KPI Cards
-            </button>
-          )}
         </div>
 
         {/* Chat Sidebar - Right Side */}
