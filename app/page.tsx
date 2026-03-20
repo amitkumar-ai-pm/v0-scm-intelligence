@@ -97,6 +97,17 @@ const Page = () => {
         { label: 'Raw Materials', value: '+8%', subtext: 'Volatility' },
       ],
     },
+    {
+      id: 'warehousing',
+      title: 'Warehousing',
+      color: 'from-amber-600 to-yellow-700',
+      icon: '🏢',
+      metrics: [
+        { label: 'Capacity Util.', value: '82%', subtext: 'Usage' },
+        { label: 'Automation', value: '+25%', subtext: 'Growth' },
+        { label: 'Costs', value: '+5%', subtext: 'YoY' },
+      ],
+    },
   ]
 
   const chatSuggestions = [
@@ -285,26 +296,27 @@ const Page = () => {
           {/* Sector Trends - Quantified Cards */}
           <section>
             <h2 className="mb-4 text-xl font-semibold text-foreground">Sector Trends</h2>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
               {trends.map((trend) => (
                 <div
                   key={trend.id}
-                  className={`group rounded-xl bg-gradient-to-br ${trend.color} p-0 shadow-lg transition-all hover:shadow-2xl hover:-translate-y-1`}
+                  className="rounded-xl border border-border/30 bg-card/50 backdrop-blur-sm overflow-hidden shadow-md transition-all hover:shadow-lg"
                 >
-                  <div className="rounded-xl bg-white/10 backdrop-blur-sm p-5 h-full flex flex-col">
-                    <div className="flex items-center gap-2 mb-4">
-                      <span className="text-2xl">{trend.icon}</span>
-                      <h3 className="font-bold text-white text-base">{trend.title}</h3>
-                    </div>
-                    <div className="space-y-3 flex-1">
-                      {trend.metrics.map((metric, idx) => (
-                        <div key={idx} className="bg-white/5 rounded-lg p-3">
-                          <p className="text-white/70 text-xs font-medium">{metric.label}</p>
-                          <p className="text-white text-lg font-bold">{metric.value}</p>
-                          <p className="text-white/60 text-xs">{metric.subtext}</p>
-                        </div>
-                      ))}
-                    </div>
+                  {/* Colored Header */}
+                  <div className={`bg-gradient-to-r ${trend.color} p-4 flex items-center gap-3`}>
+                    <span className="text-2xl">{trend.icon}</span>
+                    <h3 className="font-bold text-white text-base">{trend.title}</h3>
+                  </div>
+                  
+                  {/* Text-only Body */}
+                  <div className="p-4 space-y-3">
+                    {trend.metrics.map((metric, idx) => (
+                      <div key={idx} className="space-y-0.5">
+                        <p className="text-muted-foreground text-xs font-medium">{metric.label}</p>
+                        <p className="text-foreground text-base font-bold">{metric.value}</p>
+                        <p className="text-muted-foreground text-xs">{metric.subtext}</p>
+                      </div>
+                    ))}
                   </div>
                 </div>
               ))}
