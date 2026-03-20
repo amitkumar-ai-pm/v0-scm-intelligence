@@ -47,11 +47,10 @@ const Page = () => {
       title: 'Manufacturing',
       color: 'from-blue-600 to-blue-700',
       icon: '🏭',
-      source: 'Reuters',
       metrics: [
-        { label: 'Nearshoring', value: '+23%', subtext: 'YoY' },
-        { label: 'Automation', value: '+18%', subtext: 'Investment' },
-        { label: 'Constraints', value: '-15%', subtext: 'Easing' },
+        { label: 'Nearshoring', value: '+23%', subtext: 'YoY', source: 'Reuters' },
+        { label: 'Automation', value: '+18%', subtext: 'Investment', source: 'McKinsey' },
+        { label: 'Constraints', value: '-15%', subtext: 'Easing', source: 'Bloomberg' },
       ],
     },
     {
@@ -59,11 +58,10 @@ const Page = () => {
       title: 'Logistics',
       color: 'from-teal-600 to-cyan-700',
       icon: '🚚',
-      source: 'Bloomberg',
       metrics: [
-        { label: 'Port Delays', value: '-15%', subtext: 'Improving' },
-        { label: 'Warehouse Util.', value: '78%', subtext: 'Capacity' },
-        { label: 'Trucking', value: '+12%', subtext: 'Autonomous' },
+        { label: 'Port Delays', value: '-15%', subtext: 'Improving', source: 'Freightos' },
+        { label: 'Warehouse Util.', value: '78%', subtext: 'Capacity', source: 'CSCMP' },
+        { label: 'Trucking', value: '+12%', subtext: 'Autonomous', source: 'ATA' },
       ],
     },
     {
@@ -71,11 +69,10 @@ const Page = () => {
       title: 'Retail',
       color: 'from-orange-600 to-orange-700',
       icon: '🛍️',
-      source: 'McKinsey',
       metrics: [
-        { label: 'Inventory', value: 'Normal', subtext: 'Levels' },
-        { label: 'Stockouts', value: '-8%', subtext: 'Declining' },
-        { label: 'Omnichannel', value: '95%', subtext: 'Adoption' },
+        { label: 'Inventory', value: 'Normal', subtext: 'Levels', source: 'NRF' },
+        { label: 'Stockouts', value: '-8%', subtext: 'Declining', source: 'Numerator' },
+        { label: 'Omnichannel', value: '95%', subtext: 'Adoption', source: 'BCG' },
       ],
     },
     {
@@ -83,11 +80,10 @@ const Page = () => {
       title: 'Technology',
       color: 'from-purple-600 to-purple-700',
       icon: '⚙️',
-      source: 'TechCrunch',
       metrics: [
-        { label: 'AI Adoption', value: '+34%', subtext: 'Forecasting' },
-        { label: 'Blockchain', value: '+28%', subtext: 'Tracking' },
-        { label: 'Cloud Systems', value: '+40%', subtext: 'Growth' },
+        { label: 'AI Adoption', value: '+34%', subtext: 'Forecasting', source: 'Gartner' },
+        { label: 'Blockchain', value: '+28%', subtext: 'Tracking', source: 'Accenture' },
+        { label: 'Cloud Systems', value: '+40%', subtext: 'Growth', source: 'IDC' },
       ],
     },
     {
@@ -95,11 +91,10 @@ const Page = () => {
       title: 'FMCG',
       color: 'from-rose-600 to-pink-700',
       icon: '📦',
-      source: 'Supply Chain Dive',
       metrics: [
-        { label: 'Cold Chain Risk', value: 'High', subtext: 'Alert' },
-        { label: 'Sustainability', value: '+22%', subtext: 'Packaging' },
-        { label: 'Raw Materials', value: '+8%', subtext: 'Volatility' },
+        { label: 'Cold Chain Risk', value: 'High', subtext: 'Alert', source: 'WFP' },
+        { label: 'Sustainability', value: '+22%', subtext: 'Packaging', source: 'Ellen MacArthur' },
+        { label: 'Raw Materials', value: '+8%', subtext: 'Volatility', source: 'IMF' },
       ],
     },
     {
@@ -107,11 +102,10 @@ const Page = () => {
       title: 'Warehousing',
       color: 'from-amber-600 to-yellow-700',
       icon: '🏢',
-      source: 'Logistics Journal',
       metrics: [
-        { label: 'Capacity Util.', value: '82%', subtext: 'Usage' },
-        { label: 'Automation', value: '+25%', subtext: 'Growth' },
-        { label: 'Costs', value: '+5%', subtext: 'YoY' },
+        { label: 'Capacity Util.', value: '82%', subtext: 'Usage', source: 'CBRE' },
+        { label: 'Automation', value: '+25%', subtext: 'Growth', source: 'MHI' },
+        { label: 'Costs', value: '+5%', subtext: 'YoY', source: 'JLL' },
       ],
     },
   ]
@@ -329,16 +323,13 @@ const Page = () => {
                   {/* Text-only Body */}
                   <div className="p-4 space-y-3">
                     {trend.metrics.map((metric, idx) => (
-                      <div key={idx} className="space-y-0.5">
+                      <div key={idx} className="space-y-1">
                         <p className="text-muted-foreground text-xs font-medium">{metric.label}</p>
                         <p className="text-foreground text-base font-bold">{metric.value}</p>
                         <p className="text-muted-foreground text-xs">{metric.subtext}</p>
+                        <p className="text-primary text-xs font-medium pt-1">{metric.source}</p>
                       </div>
                     ))}
-                    {/* Source Info */}
-                    <div className="pt-2 border-t border-border/20">
-                      <p className="text-xs text-primary font-medium">{trend.source}</p>
-                    </div>
                   </div>
                 </div>
               ))}
