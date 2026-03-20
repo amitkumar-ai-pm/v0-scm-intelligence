@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronDown, ChevronRight, Send, AlertCircle, Activity, Zap, Globe, MessageSquare, Archive, Eye, EyeOff } from 'lucide-react'
+import { ChevronDown, ChevronRight, Send, AlertCircle, Activity, Zap, Globe, MessageSquare, Archive, Eye, EyeOff, User, Bell } from 'lucide-react'
 
 const Page = () => {
   const [expandedNews, setExpandedNews] = useState<string | null>(null)
@@ -196,8 +196,18 @@ const Page = () => {
           <div className="absolute -right-48 -top-32 h-96 w-96 rounded-full bg-gradient-to-br from-primary/20 to-accent/10 blur-3xl"></div>
         </div>
         <div className="relative mx-auto max-w-full px-6 py-12">
-          <h1 className="text-4xl font-bold tracking-tight text-foreground">Supply Chain Intelligence</h1>
-          <p className="mt-2 text-base text-muted-foreground">
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-4xl font-bold tracking-tight text-foreground">Supply Chain Intelligence</h1>
+            <div className="flex items-center gap-3">
+              <button className="p-2 hover:bg-muted rounded-lg transition-colors text-muted-foreground hover:text-foreground" title="Notifications">
+                <Bell className="h-5 w-5" />
+              </button>
+              <button className="p-2 hover:bg-muted rounded-lg transition-colors text-muted-foreground hover:text-foreground" title="User Profile">
+                <User className="h-5 w-5" />
+              </button>
+            </div>
+          </div>
+          <p className="text-base text-muted-foreground">
             Real-time trends, signals, and insights for executive decision-making
           </p>
         </div>
@@ -385,6 +395,26 @@ const Page = () => {
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
           </button>
 
+          {/* Chat Input - Top */}
+          <div className="rounded-xl border border-border/30 bg-card/50 backdrop-blur-sm p-4">
+            <form onSubmit={handleChatSubmit} className="flex flex-col gap-3">
+              <input
+                type="text"
+                value={chatInput}
+                onChange={(e) => setChatInput(e.target.value)}
+                placeholder="Ask anything..."
+                className="w-full rounded-lg border border-border/50 bg-background/50 px-4 py-3 text-xs placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+              />
+              <button
+                type="submit"
+                className="w-full rounded-lg bg-gradient-to-r from-primary to-accent px-3 py-2 text-white hover:shadow-lg transition-all flex items-center justify-center gap-2 text-xs font-semibold"
+              >
+                <Send className="h-3 w-3" />
+                Send
+              </button>
+            </form>
+          </div>
+
           {/* Chat Suggestions */}
           <div className="rounded-xl border border-border/30 bg-card/50 backdrop-blur-sm p-4">
             <p className="text-xs font-semibold text-muted-foreground mb-3 uppercase">Suggested Today</p>
@@ -421,26 +451,6 @@ const Page = () => {
                 </button>
               ))}
             </div>
-          </div>
-
-          {/* Chat Input */}
-          <div className="rounded-xl border border-border/30 bg-card/50 backdrop-blur-sm p-4 mt-auto">
-            <form onSubmit={handleChatSubmit} className="flex flex-col gap-3">
-              <input
-                type="text"
-                value={chatInput}
-                onChange={(e) => setChatInput(e.target.value)}
-                placeholder="Ask anything..."
-                className="w-full rounded-lg border border-border/50 bg-background/50 px-4 py-3 text-xs placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-              />
-              <button
-                type="submit"
-                className="w-full rounded-lg bg-gradient-to-r from-primary to-accent px-3 py-2 text-white hover:shadow-lg transition-all flex items-center justify-center gap-2 text-xs font-semibold"
-              >
-                <Send className="h-3 w-3" />
-                Send
-              </button>
-            </form>
           </div>
         </aside>
       </main>
