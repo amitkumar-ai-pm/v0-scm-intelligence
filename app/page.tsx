@@ -368,14 +368,15 @@ const Page = () => {
           </button>
 
           {/* Chat Input - Top */}
-          <div className="rounded-xl border border-border/30 bg-card/50 backdrop-blur-sm p-4">
+          <div className="rounded-xl border border-border/50 bg-card/60 backdrop-blur-sm p-4">
             <form onSubmit={handleChatSubmit} className="flex items-center gap-2">
               <input
                 type="text"
+                aria-label="Ask anything"
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
                 placeholder="Ask anything..."
-                className="flex-1 rounded-lg border border-border/50 bg-background/50 px-4 py-3 text-xs placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                className="flex-1 rounded-xl border border-border/70 bg-background/70 px-4 py-4 text-sm placeholder:text-muted-foreground/90 placeholder:font-medium focus:outline-none focus:ring-2 focus:ring-primary/70 focus:border-transparent transition-all hover:bg-background/90"
               />
               <button
                 type="submit"
