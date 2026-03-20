@@ -1,11 +1,38 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronDown, Send, TrendingUp, AlertCircle, Activity, Zap, Globe } from 'lucide-react'
+import { ChevronDown, ChevronRight, Send, AlertCircle, Activity, Zap, Globe, MessageSquare, Archive, Eye, EyeOff } from 'lucide-react'
 
 const Page = () => {
   const [expandedNews, setExpandedNews] = useState<string | null>(null)
   const [chatInput, setChatInput] = useState('')
+  const [showKPI, setShowKPI] = useState(true)
+  const [activeActionIndex, setActiveActionIndex] = useState(0)
+  const [isChatOpen, setIsChatOpen] = useState(false)
+
+  const criticalActions = [
+    {
+      id: 'action1',
+      title: 'Monitor Asian Weather Patterns',
+      description: 'Southeast Asian flooding could impact rubber and palm oil production',
+      priority: 'high',
+      timestamp: '2h ago',
+    },
+    {
+      id: 'action2',
+      title: 'US-China Trade Negotiations',
+      description: 'Tariff discussions ongoing; potential impact on manufacturing costs',
+      priority: 'high',
+      timestamp: '4h ago',
+    },
+    {
+      id: 'action3',
+      title: 'Energy Cost Risk',
+      description: 'Manufacturing energy costs remain elevated; monitor utility markets',
+      priority: 'medium',
+      timestamp: '6h ago',
+    },
+  ]
 
   const kpiMetrics = [
     { label: 'Supply Chain Health', value: '78%', trend: '+5%', color: 'bg-gradient-to-br from-emerald-500 to-teal-600', icon: Activity },
@@ -20,11 +47,10 @@ const Page = () => {
       title: 'Manufacturing',
       color: 'from-blue-600 to-blue-700',
       icon: '🏭',
-      items: [
-        'Nearshoring momentum accelerates in North America',
-        'Factory automation investments up 23% YoY',
-        'Supply constraints ease for semiconductor components',
-        'Energy costs drive facility relocation decisions',
+      metrics: [
+        { label: 'Nearshoring', value: '+23%', subtext: 'YoY' },
+        { label: 'Automation', value: '+18%', subtext: 'Investment' },
+        { label: 'Constraints', value: '-15%', subtext: 'Easing' },
       ],
     },
     {
@@ -32,11 +58,10 @@ const Page = () => {
       title: 'Logistics',
       color: 'from-teal-600 to-cyan-700',
       icon: '🚚',
-      items: [
-        'Port congestion decreases; vessel delays down 15%',
-        'Last-mile delivery costs stabilize after 2 years',
-        'Regional warehouse capacity at 78% utilization',
-        'Autonomous trucking pilot expansions announced',
+      metrics: [
+        { label: 'Port Delays', value: '-15%', subtext: 'Improving' },
+        { label: 'Warehouse Util.', value: '78%', subtext: 'Capacity' },
+        { label: 'Trucking', value: '+12%', subtext: 'Autonomous' },
       ],
     },
     {
@@ -44,11 +69,10 @@ const Page = () => {
       title: 'Retail',
       color: 'from-orange-600 to-orange-700',
       icon: '🛍️',
-      items: [
-        'Inventory levels normalized; stockouts decline',
-        'Consumer demand shifts toward sustainable products',
-        'Omnichannel fulfillment becomes standard',
-        'Retail margins compressed amid price competition',
+      metrics: [
+        { label: 'Inventory', value: 'Normal', subtext: 'Levels' },
+        { label: 'Stockouts', value: '-8%', subtext: 'Declining' },
+        { label: 'Omnichannel', value: '95%', subtext: 'Adoption' },
       ],
     },
     {
@@ -56,11 +80,10 @@ const Page = () => {
       title: 'Technology',
       color: 'from-purple-600 to-purple-700',
       icon: '⚙️',
-      items: [
-        'AI-driven demand forecasting adoption increases',
-        'Blockchain supply chain tracking gains traction',
-        'Cloud-based inventory systems see 40% growth',
-        'Cybersecurity investments prioritized for supply networks',
+      metrics: [
+        { label: 'AI Adoption', value: '+34%', subtext: 'Forecasting' },
+        { label: 'Blockchain', value: '+28%', subtext: 'Tracking' },
+        { label: 'Cloud Systems', value: '+40%', subtext: 'Growth' },
       ],
     },
     {
@@ -68,13 +91,25 @@ const Page = () => {
       title: 'FMCG',
       color: 'from-rose-600 to-pink-700',
       icon: '📦',
-      items: [
-        'Cold chain disruptions impact perishable goods',
-        'Sustainability packaging mandates reshape logistics',
-        'Direct-to-consumer models reshape distribution',
-        'Raw material volatility creates pricing pressure',
+      metrics: [
+        { label: 'Cold Chain Risk', value: 'High', subtext: 'Alert' },
+        { label: 'Sustainability', value: '+22%', subtext: 'Packaging' },
+        { label: 'Raw Materials', value: '+8%', subtext: 'Volatility' },
       ],
     },
+  ]
+
+  const chatSuggestions = [
+    { icon: AlertCircle, text: 'What are today\'s top risks?' },
+    { icon: Zap, text: 'How to reduce costs?' },
+    { icon: Activity, text: 'Supply chain status?' },
+    { icon: Globe, text: 'Geopolitical impact?' },
+  ]
+
+  const chatHistory = [
+    { title: 'Manufacturing nearshoring', time: '2d ago' },
+    { title: 'Port congestion analysis', time: '5d ago' },
+    { title: 'Cost optimization trends', time: '1w ago' },
   ]
 
   const newsCategories = [
@@ -131,8 +166,15 @@ const Page = () => {
 
   const handleChatSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // Chat functionality would be implemented here
     setChatInput('')
+  }
+
+  const nextAction = () => {
+    setActiveActionIndex((prev) => (prev + 1) % criticalActions.length)
+  }
+
+  const prevAction = () => {
+    setActiveActionIndex((prev) => (prev - 1 + criticalActions.length) % criticalActions.length)
   }
 
   return (
@@ -142,149 +184,253 @@ const Page = () => {
         <div className="absolute inset-0 opacity-20">
           <div className="absolute -right-48 -top-32 h-96 w-96 rounded-full bg-gradient-to-br from-primary/20 to-accent/10 blur-3xl"></div>
         </div>
-        <div className="relative mx-auto max-w-7xl px-6 py-16">
-          <div className="flex items-baseline justify-between">
-            <div>
-              <h1 className="text-5xl font-bold tracking-tight text-foreground">Supply Chain Intelligence</h1>
-              <p className="mt-3 text-lg text-muted-foreground">
-                Real-time trends, signals, and insights for executive decision-making
-              </p>
-            </div>
-          </div>
+        <div className="relative mx-auto max-w-full px-6 py-12">
+          <h1 className="text-4xl font-bold tracking-tight text-foreground">Supply Chain Intelligence</h1>
+          <p className="mt-2 text-base text-muted-foreground">
+            Real-time trends, signals, and insights for executive decision-making
+          </p>
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl px-6 py-12">
-        {/* KPI Metrics Section */}
-        <section className="mb-16">
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {kpiMetrics.map((metric) => {
-              const Icon = metric.icon
-              return (
-                <div
-                  key={metric.label}
-                  className={`${metric.color} rounded-xl p-8 text-white shadow-lg transition-all hover:shadow-xl hover:scale-105`}
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <Icon className="h-6 w-6 opacity-80" />
-                    <span className={`text-sm font-semibold ${metric.trend.startsWith('+') ? 'text-emerald-200' : 'text-green-200'}`}>
-                      {metric.trend}
-                    </span>
+      <main className="flex gap-6 px-6 py-8">
+        {/* Main Content - Left Side */}
+        <div className="flex-1 space-y-8">
+          {/* Critical Actions - Scrollable Carousel */}
+          <section>
+            <h2 className="mb-4 text-xl font-semibold text-foreground">Today's Critical Actions</h2>
+            <div className="relative">
+              <div className="rounded-xl border border-orange-200/50 bg-gradient-to-br from-orange-50/50 to-rose-50/50 p-6 backdrop-blur-sm">
+                <div className="flex items-start gap-4">
+                  <AlertCircle className="h-5 w-5 flex-shrink-0 text-orange-600 mt-1" />
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-foreground text-base">{criticalActions[activeActionIndex].title}</h3>
+                    <p className="mt-1 text-sm text-foreground/80">{criticalActions[activeActionIndex].description}</p>
+                    <p className="mt-3 text-xs text-muted-foreground">{criticalActions[activeActionIndex].timestamp}</p>
                   </div>
-                  <p className="text-sm font-medium opacity-90">{metric.label}</p>
-                  <p className="mt-2 text-4xl font-bold">{metric.value}</p>
                 </div>
-              )
-            })}
-          </div>
-        </section>
-
-        {/* Key Insights Alert Box */}
-        <section className="mb-16">
-          <div className="rounded-xl border border-orange-200/50 bg-gradient-to-br from-orange-50/50 to-rose-50/50 p-8 backdrop-blur-sm">
-            <div className="flex gap-4">
-              <AlertCircle className="h-6 w-6 flex-shrink-0 text-orange-600 mt-1" />
-              <div>
-                <h3 className="mb-2 text-lg font-bold text-foreground">Today's Critical Actions</h3>
-                <p className="leading-relaxed text-foreground/85">
-                  Global supply chains show signs of stabilization with port congestion easing and nearshoring momentum accelerating. However, geopolitical tensions and weather disruptions remain significant risks. Manufacturing costs continue to face upward pressure from energy prices, while technology adoption for AI-driven forecasting and blockchain tracking is becoming industry standard. <strong>Action required:</strong> Monitor Asian weather patterns and US-China trade negotiations closely.
-                </p>
               </div>
+              
+              {/* Navigation */}
+              {criticalActions.length > 1 && (
+                <div className="mt-3 flex items-center justify-between">
+                  <button
+                    onClick={prevAction}
+                    className="p-2 hover:bg-muted rounded-lg transition-colors text-muted-foreground hover:text-foreground"
+                  >
+                    <ChevronDown className="h-4 w-4 rotate-90" />
+                  </button>
+                  <div className="flex gap-2">
+                    {criticalActions.map((_, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setActiveActionIndex(idx)}
+                        className={`h-2 w-2 rounded-full transition-colors ${
+                          idx === activeActionIndex ? 'bg-primary' : 'bg-border'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <button
+                    onClick={nextAction}
+                    className="p-2 hover:bg-muted rounded-lg transition-colors text-muted-foreground hover:text-foreground"
+                  >
+                    <ChevronDown className="h-4 w-4 -rotate-90" />
+                  </button>
+                </div>
+              )}
+            </div>
+          </section>
+
+          {/* Latest Signals Section */}
+          <section>
+            <h2 className="mb-4 text-xl font-semibold text-foreground">Latest Signals</h2>
+            <div className="space-y-3">
+              {newsCategories.map((category) => (
+                <div key={category.id} className="rounded-xl border border-border/30 overflow-hidden backdrop-blur-sm bg-card/50 hover:bg-card/70 transition-colors">
+                  <button
+                    onClick={() => toggleNews(category.id)}
+                    className="flex w-full items-center justify-between px-5 py-3 text-left"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="h-2 w-2 rounded-full bg-primary"></div>
+                      <h3 className="font-semibold text-base text-foreground">{category.title}</h3>
+                    </div>
+                    <ChevronDown
+                      className={`h-4 w-4 text-muted-foreground transition-transform duration-300 ${
+                        expandedNews === category.id ? 'rotate-180' : ''
+                      }`}
+                    />
+                  </button>
+                  {expandedNews === category.id && (
+                    <div className="border-t border-border/20 bg-gradient-to-b from-foreground/2 to-transparent p-5">
+                      <ul className="space-y-3">
+                        {category.news.map((item, idx) => (
+                          <li key={idx} className="space-y-1 pb-3 border-b border-border/10 last:border-0 last:pb-0">
+                            <p className="font-semibold text-foreground text-sm">{item.headline}</p>
+                            <p className="text-xs text-muted-foreground flex gap-2">
+                              <span className="font-medium text-primary">{item.source}</span>
+                              <span>•</span>
+                              <span>{item.date}</span>
+                            </p>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Sector Trends - Quantified Cards */}
+          <section>
+            <h2 className="mb-4 text-xl font-semibold text-foreground">Sector Trends</h2>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+              {trends.map((trend) => (
+                <div
+                  key={trend.id}
+                  className={`group rounded-xl bg-gradient-to-br ${trend.color} p-0 shadow-lg transition-all hover:shadow-2xl hover:-translate-y-1`}
+                >
+                  <div className="rounded-xl bg-white/10 backdrop-blur-sm p-5 h-full flex flex-col">
+                    <div className="flex items-center gap-2 mb-4">
+                      <span className="text-2xl">{trend.icon}</span>
+                      <h3 className="font-bold text-white text-base">{trend.title}</h3>
+                    </div>
+                    <div className="space-y-3 flex-1">
+                      {trend.metrics.map((metric, idx) => (
+                        <div key={idx} className="bg-white/5 rounded-lg p-3">
+                          <p className="text-white/70 text-xs font-medium">{metric.label}</p>
+                          <p className="text-white text-lg font-bold">{metric.value}</p>
+                          <p className="text-white/60 text-xs">{metric.subtext}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* KPI Cards - Smaller, Collapsible */}
+          {showKPI && (
+            <section>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-foreground">Key Performance Indicators</h2>
+                <button
+                  onClick={() => setShowKPI(false)}
+                  className="p-2 hover:bg-muted rounded-lg transition-colors text-muted-foreground hover:text-foreground"
+                  title="Hide KPI Cards"
+                >
+                  <EyeOff className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                {kpiMetrics.map((metric) => {
+                  const Icon = metric.icon
+                  return (
+                    <div
+                      key={metric.label}
+                      className={`${metric.color} rounded-lg p-5 text-white shadow-md transition-all hover:shadow-lg hover:scale-105`}
+                    >
+                      <div className="flex items-center justify-between mb-3">
+                        <Icon className="h-5 w-5 opacity-80" />
+                        <span className={`text-xs font-semibold ${metric.trend.startsWith('+') ? 'text-emerald-200' : 'text-green-200'}`}>
+                          {metric.trend}
+                        </span>
+                      </div>
+                      <p className="text-xs font-medium opacity-90">{metric.label}</p>
+                      <p className="mt-2 text-2xl font-bold">{metric.value}</p>
+                    </div>
+                  )
+                })}
+              </div>
+            </section>
+          )}
+
+          {!showKPI && (
+            <button
+              onClick={() => setShowKPI(true)}
+              className="w-full py-3 rounded-lg border border-dashed border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors text-sm font-medium flex items-center justify-center gap-2"
+            >
+              <Eye className="h-4 w-4" />
+              Show KPI Cards
+            </button>
+          )}
+        </div>
+
+        {/* Chat Sidebar - Right Side */}
+        <aside className="w-80 hidden lg:flex flex-col gap-4">
+          {/* Chat Button */}
+          <button
+            onClick={() => setIsChatOpen(!isChatOpen)}
+            className="flex items-center gap-3 w-full rounded-xl border border-primary/30 bg-gradient-to-br from-primary/10 to-accent/5 px-5 py-4 text-left hover:bg-primary/15 transition-colors"
+          >
+            <MessageSquare className="h-5 w-5 text-primary flex-shrink-0" />
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-sm text-foreground">Ask AI</p>
+              <p className="text-xs text-muted-foreground truncate">New conversation</p>
+            </div>
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          </button>
+
+          {/* Chat Suggestions */}
+          <div className="rounded-xl border border-border/30 bg-card/50 backdrop-blur-sm p-4">
+            <p className="text-xs font-semibold text-muted-foreground mb-3 uppercase">Suggested Today</p>
+            <div className="space-y-2">
+              {chatSuggestions.map((suggestion, idx) => {
+                const Icon = suggestion.icon
+                return (
+                  <button
+                    key={idx}
+                    className="w-full text-left text-xs p-3 rounded-lg bg-background hover:bg-primary/10 transition-colors flex items-center gap-2 text-foreground hover:text-primary"
+                  >
+                    <Icon className="h-4 w-4 flex-shrink-0" />
+                    <span className="line-clamp-2">{suggestion.text}</span>
+                  </button>
+                )
+              })}
             </div>
           </div>
-        </section>
 
-        {/* Key Trends Section */}
-        <section className="mb-16">
-          <h2 className="mb-8 text-3xl font-bold tracking-tight text-foreground">Sector Trends</h2>
-          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-5">
-            {trends.map((trend) => (
-              <div
-                key={trend.id}
-                className={`group rounded-xl bg-gradient-to-br ${trend.color} p-0 shadow-lg transition-all hover:shadow-2xl hover:-translate-y-1`}
-              >
-                <div className="rounded-xl bg-white/10 backdrop-blur-sm p-6 h-full">
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className="text-3xl">{trend.icon}</span>
-                    <h3 className="font-bold text-white text-lg">{trend.title}</h3>
-                  </div>
-                  <ul className="space-y-2">
-                    {trend.items.map((item, idx) => (
-                      <li key={idx} className="text-sm leading-snug text-white/90 flex gap-2">
-                        <span className="flex-shrink-0 mt-1">•</span>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Latest Signals Section */}
-        <section className="mb-16">
-          <h2 className="mb-8 text-3xl font-bold tracking-tight text-foreground">Latest Signals</h2>
-          <div className="space-y-3">
-            {newsCategories.map((category) => (
-              <div key={category.id} className="rounded-xl border border-border/30 overflow-hidden backdrop-blur-sm bg-card/50 hover:bg-card/70 transition-colors">
+          {/* Chat History */}
+          <div className="rounded-xl border border-border/30 bg-card/50 backdrop-blur-sm p-4">
+            <p className="text-xs font-semibold text-muted-foreground mb-3 uppercase flex items-center gap-2">
+              <Archive className="h-4 w-4" />
+              Recent
+            </p>
+            <div className="space-y-2">
+              {chatHistory.map((chat, idx) => (
                 <button
-                  onClick={() => toggleNews(category.id)}
-                  className="flex w-full items-center justify-between px-6 py-4 text-left"
+                  key={idx}
+                  className="w-full text-left text-xs p-3 rounded-lg bg-background hover:bg-muted transition-colors text-foreground"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="h-2 w-2 rounded-full bg-primary"></div>
-                    <h3 className="font-bold text-lg text-foreground">{category.title}</h3>
-                  </div>
-                  <ChevronDown
-                    className={`h-5 w-5 text-muted-foreground transition-transform duration-300 ${
-                      expandedNews === category.id ? 'rotate-180' : ''
-                    }`}
-                  />
+                  <p className="line-clamp-1 font-medium">{chat.title}</p>
+                  <p className="text-muted-foreground text-xs mt-1">{chat.time}</p>
                 </button>
-                {expandedNews === category.id && (
-                  <div className="border-t border-border/20 bg-gradient-to-b from-foreground/2 to-transparent p-6">
-                    <ul className="space-y-4">
-                      {category.news.map((item, idx) => (
-                        <li key={idx} className="space-y-1.5 pb-4 border-b border-border/10 last:border-0 last:pb-0">
-                          <p className="font-semibold text-foreground text-sm leading-snug">{item.headline}</p>
-                          <p className="text-xs text-muted-foreground flex gap-2">
-                            <span className="font-medium text-primary">{item.source}</span>
-                            <span>•</span>
-                            <span>{item.date}</span>
-                          </p>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </section>
 
-        {/* Chat Section */}
-        <section>
-          <h2 className="mb-8 text-3xl font-bold tracking-tight text-foreground">Ask Supply Chain AI</h2>
-          <div className="rounded-xl border border-border/30 bg-gradient-to-br from-card to-card/50 p-8 backdrop-blur-sm shadow-lg">
-            <form onSubmit={handleChatSubmit} className="flex gap-3">
+          {/* Chat Input */}
+          <div className="rounded-xl border border-border/30 bg-card/50 backdrop-blur-sm p-4 mt-auto">
+            <form onSubmit={handleChatSubmit} className="flex flex-col gap-3">
               <input
                 type="text"
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
-                placeholder="Ask anything about supply chain trends, risks, or opportunities..."
-                className="flex-1 rounded-lg border border-border/50 bg-background/50 px-5 py-4 text-sm placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all backdrop-blur-sm"
+                placeholder="Ask anything..."
+                className="w-full rounded-lg border border-border/50 bg-background/50 px-4 py-3 text-xs placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
               />
               <button
                 type="submit"
-                className="rounded-lg bg-gradient-to-r from-primary to-accent px-6 py-4 text-white hover:shadow-lg transition-all flex items-center gap-2 text-sm font-semibold hover:scale-105"
+                className="w-full rounded-lg bg-gradient-to-r from-primary to-accent px-3 py-2 text-white hover:shadow-lg transition-all flex items-center justify-center gap-2 text-xs font-semibold"
               >
-                <Send className="h-4 w-4" />
-                <span className="hidden sm:inline">Ask</span>
+                <Send className="h-3 w-3" />
+                Send
               </button>
             </form>
           </div>
-        </section>
+        </aside>
       </main>
     </div>
   )
