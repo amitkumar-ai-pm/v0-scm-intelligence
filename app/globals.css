@@ -156,3 +156,94 @@
     @apply text-lg;
   }
 }
+
+/* Print Styles */
+@media print {
+  /* Override dark theme for print */
+  body, .dark {
+    --background: oklch(1 0 0) !important;
+    --foreground: oklch(0.15 0.01 285) !important;
+    --card: oklch(0.98 0.001 285) !important;
+    --card-foreground: oklch(0.15 0.01 285) !important;
+    --muted-foreground: oklch(0.5 0.03 285) !important;
+    --border: oklch(0.93 0.01 285) !important;
+  }
+
+  /* Hide non-essential elements */
+  aside, .sidebar {
+    display: none !important;
+  }
+
+  /* Adjust main layout for printing */
+  main {
+    flex-direction: column !important;
+    gap: 0 !important;
+  }
+
+  main > div:first-child {
+    width: 100% !important;
+  }
+
+  header {
+    background: white !important;
+    color: black !important;
+    margin-bottom: 20px;
+  }
+
+  header button {
+    display: none !important;
+  }
+
+  /* Optimize sections for print */
+  section {
+    page-break-inside: avoid;
+    margin-bottom: 30px;
+  }
+
+  /* Card styling for print */
+  div[class*="rounded-xl border"] {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Grid optimization */
+  .grid {
+    display: block !important;
+  }
+
+  .grid > div {
+    margin-bottom: 20px;
+  }
+
+  /* Text visibility */
+  h1, h2, h3, p {
+    color: #000 !important;
+  }
+
+  /* Ensure colored headers remain visible */
+  div[class*="bg-gradient-to-r"] {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Hide chat sidebar completely */
+  [class*="w-80"] {
+    display: none !important;
+  }
+
+  /* Adjust spacing for print */
+  html {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    margin: 10mm;
+    padding: 0;
+  }
+
+  /* Ensure content fits on page */
+  main {
+    margin: 0;
+  }
+}
