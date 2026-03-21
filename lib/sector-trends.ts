@@ -1,0 +1,178 @@
+import type { SectorTrendCard } from './scm-types'
+
+export const SECTOR_TRENDS: SectorTrendCard[] = [
+  {
+    id: 'manufacturing',
+    title: 'Manufacturing',
+    color: 'from-blue-600 to-blue-700',
+    icon: '🏭',
+    metrics: [
+      {
+        label: 'Nearshoring',
+        value: '+23%',
+        subtext: 'YoY',
+        source: 'Reuters',
+        sourceUrl: 'https://www.reuters.com/business/',
+      },
+      {
+        label: 'Automation',
+        value: '+18%',
+        subtext: 'Investment',
+        source: 'McKinsey',
+        sourceUrl: 'https://www.mckinsey.com/capabilities/operations/our-insights',
+      },
+      {
+        label: 'Constraints',
+        value: '-15%',
+        subtext: 'Easing',
+        source: 'Bloomberg',
+        sourceUrl: 'https://www.bloomberg.com/industries',
+      },
+    ],
+  },
+  {
+    id: 'logistics',
+    title: 'Logistics',
+    color: 'from-teal-600 to-cyan-700',
+    icon: '🚚',
+    metrics: [
+      {
+        label: 'Port Delays',
+        value: '-15%',
+        subtext: 'Improving',
+        source: 'Freightos',
+        sourceUrl: 'https://www.freightos.com/freight-data/',
+      },
+      {
+        label: 'Warehouse Util.',
+        value: '78%',
+        subtext: 'Capacity',
+        source: 'CSCMP',
+        sourceUrl: 'https://cscmp.org/',
+      },
+      {
+        label: 'Trucking',
+        value: '+12%',
+        subtext: 'Autonomous',
+        source: 'ATA',
+        sourceUrl: 'https://www.trucking.org/',
+      },
+    ],
+  },
+  {
+    id: 'retail',
+    title: 'Retail',
+    color: 'from-orange-600 to-orange-700',
+    icon: '🛍️',
+    metrics: [
+      {
+        label: 'Inventory',
+        value: 'Normal',
+        subtext: 'Levels',
+        source: 'NRF',
+        sourceUrl: 'https://nrf.com/',
+      },
+      {
+        label: 'Stockouts',
+        value: '-8%',
+        subtext: 'Declining',
+        source: 'Numerator',
+        sourceUrl: 'https://www.numerator.com/',
+      },
+      {
+        label: 'Omnichannel',
+        value: '95%',
+        subtext: 'Adoption',
+        source: 'BCG',
+        sourceUrl: 'https://www.bcg.com/capabilities/operations-supply-chain',
+      },
+    ],
+  },
+  {
+    id: 'technology',
+    title: 'Technology',
+    color: 'from-purple-600 to-purple-700',
+    icon: '⚙️',
+    metrics: [
+      {
+        label: 'AI Adoption',
+        value: '+34%',
+        subtext: 'Forecasting',
+        source: 'Gartner',
+        sourceUrl: 'https://www.gartner.com/en/supply-chain',
+      },
+      {
+        label: 'Blockchain',
+        value: '+28%',
+        subtext: 'Tracking',
+        source: 'Accenture',
+        sourceUrl: 'https://www.accenture.com/us-en/services/supply-chain-operations',
+      },
+      {
+        label: 'Cloud Systems',
+        value: '+40%',
+        subtext: 'Growth',
+        source: 'IDC',
+        sourceUrl: 'https://www.idc.com/',
+      },
+    ],
+  },
+  {
+    id: 'fmcg',
+    title: 'FMCG',
+    color: 'from-rose-600 to-pink-700',
+    icon: '📦',
+    metrics: [
+      {
+        label: 'Cold Chain Risk',
+        value: 'High',
+        subtext: 'Alert',
+        source: 'WFP',
+        sourceUrl: 'https://www.wfp.org/',
+      },
+      {
+        label: 'Sustainability',
+        value: '+22%',
+        subtext: 'Packaging',
+        source: 'Ellen MacArthur',
+        sourceUrl: 'https://ellenmacarthurfoundation.org/',
+      },
+      {
+        label: 'Raw Materials',
+        value: '+8%',
+        subtext: 'Volatility',
+        source: 'IMF',
+        sourceUrl: 'https://www.imf.org/',
+      },
+    ],
+  },
+  {
+    id: 'warehousing',
+    title: 'Warehousing',
+    color: 'from-amber-600 to-yellow-700',
+    icon: '🏢',
+    metrics: [
+      {
+        label: 'Capacity Util.',
+        value: '82%',
+        subtext: 'Usage',
+        source: 'CBRE',
+        sourceUrl: 'https://www.cbre.com/insights',
+      },
+      {
+        label: 'Automation',
+        value: '+25%',
+        subtext: 'Growth',
+        source: 'MHI',
+        sourceUrl: 'https://www.mhi.org/',
+      },
+      {
+        label: 'Costs',
+        value: '+5%',
+        subtext: 'YoY',
+        source: 'JLL',
+        sourceUrl: 'https://www.jll.com/trends-and-insights',
+      },
+    ],
+  },
+]

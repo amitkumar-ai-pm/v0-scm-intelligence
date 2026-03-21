@@ -1,15 +1,48 @@
 'use client'
 
-import { useState } from 'react'
-import { ChevronDown, ChevronRight, Send, AlertCircle, Activity, Zap, Globe, MessageSquare, Archive, User, Bell, Download } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { AlertCircle, ChevronDown, User, Bell, Download } from 'lucide-react'
+import { ScmAssistant } from '@/components/scm-assistant'
+import { SECTOR_TRENDS } from '@/lib/sector-trends'
+import type { CriticalAction, InsightsResponse, NewsCategory, SectorTrendMetric } from '@/lib/scm-types'
+
+type InsightsLoadState = 'loading' | 'success' | 'error'
+
+/** Opens relevant context: explicit URL when set, otherwise a web search for this metric + sector + source. */
+function getSectorMetricSourceUrl(trendTitle: string, metric: SectorTrendMetric): string {
+  const direct = metric.sourceUrl?.trim()
+  if (direct && /^https?:\/\//i.test(direct)) return direct
+  const q = encodeURIComponent(`${metric.source} ${metric.label} ${trendTitle} supply chain trends`)
+  return `https://duckduckgo.com/?q=${q}&ia=web`
+}
 
 const Page = () => {
   const [expandedNews, setExpandedNews] = useState<string | null>(null)
-  const [chatInput, setChatInput] = useState('')
   const [activeActionIndex, setActiveActionIndex] = useState(0)
-  const [isChatOpen, setIsChatOpen] = useState(false)
+  const [data, setData] = useState<InsightsResponse | null>(null)
+  /** Avoid showing 3-item static fallback while /api/insights is still loading (matches API 5 items + urls). */
+  const [insightsLoadState, setInsightsLoadState] = useState<InsightsLoadState>('loading')
 
-  const criticalActions = [
+  useEffect(() => {
+    const fetchData = async () => {
+      setInsightsLoadState('loading')
+      try {
+        const res = await fetch('/api/insights', { cache: 'no-store' })
+        if (!res.ok) throw new Error(`API request failed: ${res.status}`)
+        const json = (await res.json()) as InsightsResponse
+        setData(json)
+        setInsightsLoadState('success')
+      } catch (err) {
+        console.error('API error:', err)
+        setInsightsLoadState('error')
+      }
+    }
+
+    fetchData()
+  }, [])
+
+  /** Offline / error fallback — same shape as /api/insights `criticalActions`. */
+  const fallbackCriticalActions: CriticalAction[] = [
     {
       id: 'action1',
       title: 'Monitor Asian Weather Patterns',
@@ -31,91 +64,42 @@ const Page = () => {
       priority: 'medium',
       timestamp: '6h ago',
     },
-  ]
-
-  const trends = [
     {
-      id: 'manufacturing',
-      title: 'Manufacturing',
-      color: 'from-blue-600 to-blue-700',
-      icon: '🏭',
-      metrics: [
-        { label: 'Nearshoring', value: '+23%', subtext: 'YoY', source: 'Reuters' },
-        { label: 'Automation', value: '+18%', subtext: 'Investment', source: 'McKinsey' },
-        { label: 'Constraints', value: '-15%', subtext: 'Easing', source: 'Bloomberg' },
-      ],
+      id: 'action4',
+      title: 'Review Ocean & Port Exposure',
+      description: 'Validate lead times and capacity on key lanes; adjust safety stock if congestion signals persist',
+      priority: 'medium',
+      timestamp: '8h ago',
     },
     {
-      id: 'logistics',
-      title: 'Logistics',
-      color: 'from-teal-600 to-cyan-700',
-      icon: '🚚',
-      metrics: [
-        { label: 'Port Delays', value: '-15%', subtext: 'Improving', source: 'Freightos' },
-        { label: 'Warehouse Util.', value: '78%', subtext: 'Capacity', source: 'CSCMP' },
-        { label: 'Trucking', value: '+12%', subtext: 'Autonomous', source: 'ATA' },
-      ],
-    },
-    {
-      id: 'retail',
-      title: 'Retail',
-      color: 'from-orange-600 to-orange-700',
-      icon: '🛍️',
-      metrics: [
-        { label: 'Inventory', value: 'Normal', subtext: 'Levels', source: 'NRF' },
-        { label: 'Stockouts', value: '-8%', subtext: 'Declining', source: 'Numerator' },
-        { label: 'Omnichannel', value: '95%', subtext: 'Adoption', source: 'BCG' },
-      ],
-    },
-    {
-      id: 'technology',
-      title: 'Technology',
-      color: 'from-purple-600 to-purple-700',
-      icon: '⚙️',
-      metrics: [
-        { label: 'AI Adoption', value: '+34%', subtext: 'Forecasting', source: 'Gartner' },
-        { label: 'Blockchain', value: '+28%', subtext: 'Tracking', source: 'Accenture' },
-        { label: 'Cloud Systems', value: '+40%', subtext: 'Growth', source: 'IDC' },
-      ],
-    },
-    {
-      id: 'fmcg',
-      title: 'FMCG',
-      color: 'from-rose-600 to-pink-700',
-      icon: '📦',
-      metrics: [
-        { label: 'Cold Chain Risk', value: 'High', subtext: 'Alert', source: 'WFP' },
-        { label: 'Sustainability', value: '+22%', subtext: 'Packaging', source: 'Ellen MacArthur' },
-        { label: 'Raw Materials', value: '+8%', subtext: 'Volatility', source: 'IMF' },
-      ],
-    },
-    {
-      id: 'warehousing',
-      title: 'Warehousing',
-      color: 'from-amber-600 to-yellow-700',
-      icon: '🏢',
-      metrics: [
-        { label: 'Capacity Util.', value: '82%', subtext: 'Usage', source: 'CBRE' },
-        { label: 'Automation', value: '+25%', subtext: 'Growth', source: 'MHI' },
-        { label: 'Costs', value: '+5%', subtext: 'YoY', source: 'JLL' },
-      ],
+      id: 'action5',
+      title: 'Stress-Test Supplier Continuity',
+      description: 'Confirm backup sources and contract flexibility for tier-one components amid policy shifts',
+      priority: 'low',
+      timestamp: '12h ago',
     },
   ]
 
-  const chatSuggestions = [
-    { icon: AlertCircle, text: 'What are today\'s top risks?' },
-    { icon: Zap, text: 'How to reduce costs?' },
-    { icon: Activity, text: 'Supply chain status?' },
-    { icon: Globe, text: 'Geopolitical impact?' },
-  ]
+  const criticalActions: CriticalAction[] =
+    insightsLoadState === 'success' && data?.criticalActions && data.criticalActions.length > 0
+      ? data.criticalActions
+      : fallbackCriticalActions
 
-  const chatHistory = [
-    { title: 'Manufacturing nearshoring', time: '2d ago' },
-    { title: 'Port congestion analysis', time: '5d ago' },
-    { title: 'Cost optimization trends', time: '1w ago' },
-  ]
+  useEffect(() => {
+    setActiveActionIndex((i) => Math.min(i, Math.max(0, criticalActions.length - 1)))
+  }, [criticalActions.length])
 
-  const newsCategories = [
+  const priorityBadgeClass = (p: CriticalAction['priority']) =>
+    p === 'high'
+      ? 'bg-red-500/15 text-red-700 dark:text-red-300 border border-red-500/25'
+      : p === 'low'
+        ? 'bg-muted text-muted-foreground border border-border'
+        : 'bg-amber-500/15 text-amber-800 dark:text-amber-200 border border-amber-500/25'
+
+  const trends = SECTOR_TRENDS
+
+  /** Shown only if /api/insights fails — 5 items & 7 categories to mirror API shape (placeholders, not live). */
+  const fallbackNewsCategories: NewsCategory[] = [
     {
       id: 'geopolitics',
       title: 'Geopolitics',
@@ -123,6 +107,8 @@ const Page = () => {
         { headline: 'US-China trade tensions ease slightly; tariff negotiations begin', source: 'Reuters', date: '2h ago' },
         { headline: 'India becomes key manufacturing hub; supply chain rebalancing', source: 'Bloomberg', date: '4h ago' },
         { headline: 'EU supply chain resilience directive enters enforcement phase', source: 'Financial Times', date: '6h ago' },
+        { headline: 'Regional trade corridors adapt to shifting compliance rules', source: 'WSJ', date: '5h ago' },
+        { headline: 'Export controls update affects high-tech supply routes', source: 'FT', date: '8h ago' },
       ],
     },
     {
@@ -132,6 +118,8 @@ const Page = () => {
         { headline: 'Southeast Asian flooding affects rubber and palm oil production', source: 'Reuters', date: '1h ago' },
         { headline: 'Arctic shipping routes open earlier than historical average', source: 'Maritime News', date: '3h ago' },
         { headline: 'California drought impacts agricultural export capacity', source: 'AP', date: '5h ago' },
+        { headline: 'Storm systems tracked along major freight corridors', source: 'NOAA', date: '6h ago' },
+        { headline: 'Climate volatility cited in crop yield forecasts', source: 'Bloomberg', date: '7h ago' },
       ],
     },
     {
@@ -141,6 +129,8 @@ const Page = () => {
         { headline: 'Major retailer invests $2B in automated warehouse network', source: 'TechCrunch', date: '2h ago' },
         { headline: 'Logistics firm announces strategic merger to expand regional reach', source: 'Bloomberg', date: '4h ago' },
         { headline: 'Pharma companies form alliance for resilient supply chains', source: 'PharmaTech', date: '7h ago' },
+        { headline: '3PL acquisition expands cold-chain footprint in EU', source: 'Supply Chain Dive', date: '5h ago' },
+        { headline: 'Private equity backs port automation startup', source: 'Reuters', date: '8h ago' },
       ],
     },
     {
@@ -150,6 +140,8 @@ const Page = () => {
         { headline: 'FedEx reports Q2 earnings; operational efficiency improves 8%', source: 'Yahoo Finance', date: '30m ago' },
         { headline: 'DHL launches AI-powered predictive logistics platform', source: 'Supply Chain Dive', date: '2h ago' },
         { headline: 'Maersk integrates real-time carbon tracking across operations', source: 'Container News', date: '3h ago' },
+        { headline: 'Carrier issues service update on Asia–Europe lanes', source: 'Lloyd\'s List', date: '4h ago' },
+        { headline: 'Warehouse operator opens automated fulfillment site', source: 'DC Velocity', date: '6h ago' },
       ],
     },
     {
@@ -159,17 +151,43 @@ const Page = () => {
         { headline: 'Shipping costs stabilize; fuel surcharges reduced across routes', source: 'Freightos', date: '1h ago' },
         { headline: 'Trucking industry experiences driver shortages amid wage increases', source: 'ATRI', date: '3h ago' },
         { headline: 'Manufacturing orders decline 2%; forward guidance cautious', source: 'ISM', date: '4h ago' },
+        { headline: 'Inventory-to-sales ratios normalize in retail sector', source: 'NRF', date: '5h ago' },
+        { headline: 'Procurement teams prioritize dual sourcing', source: 'Gartner', date: '7h ago' },
+      ],
+    },
+    {
+      id: 'shipping',
+      title: 'Shipping & Ports',
+      news: [
+        { headline: 'Port throughput recovers after holiday backlog', source: 'Journal of Commerce', date: '2h ago' },
+        { headline: 'Blank sailings reduced on transpacific strings', source: 'Lloyd\'s List', date: '4h ago' },
+        { headline: 'Intermodal volumes tick up week over week', source: 'ATA', date: '5h ago' },
+        { headline: 'Container availability improves at major hubs', source: 'Xeneta', date: '6h ago' },
+        { headline: 'Barge operators report steady grain movements', source: 'Reuters', date: '8h ago' },
+      ],
+    },
+    {
+      id: 'trade',
+      title: 'Trade & Tariffs',
+      news: [
+        { headline: 'Customs delays ease after new clearance pilot', source: 'TradeWinds', date: '1h ago' },
+        { headline: 'Importer groups petition for tariff reconsideration', source: 'Politico', date: '3h ago' },
+        { headline: 'Rules of origin guidance updated for key FTA', source: 'WTO', date: '5h ago' },
+        { headline: 'Cross-border e-commerce shipments face new documentation', source: 'Bloomberg', date: '6h ago' },
+        { headline: 'Steel tariff debate resumes in trade committee', source: 'FT', date: '7h ago' },
       ],
     },
   ]
 
+  const newsCategories =
+    insightsLoadState === 'success'
+      ? data?.newsCategories ?? []
+      : insightsLoadState === 'error'
+        ? fallbackNewsCategories
+        : []
+
   const toggleNews = (categoryId: string) => {
     setExpandedNews(expandedNews === categoryId ? null : categoryId)
-  }
-
-  const handleChatSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setChatInput('')
   }
 
   const nextAction = () => {
@@ -228,17 +246,30 @@ const Page = () => {
         </div>
       </header>
 
-      <main className="flex gap-6 px-6 py-8">
+      {/* Extra bottom padding so Sector Trends / last cards stay above the fixed Assistant FAB */}
+      <main className="px-6 py-8 pb-32 max-[480px]:pb-36">
         {/* Main Content - Left Side */}
         <div id="dashboard-content" className="flex-1 space-y-8">
           {/* Critical Actions - Scrollable Carousel */}
           <section>
             <h2 className="mb-4 text-xl font-semibold text-foreground">Today's Critical Actions</h2>
+            {insightsLoadState === 'loading' && (
+              <p className="text-xs text-muted-foreground mb-2">Personalizing actions from latest news signals…</p>
+            )}
             <div className="relative">
               <div className="rounded-xl border border-primary/30 bg-gradient-to-r from-primary/15 via-accent/10 to-primary/15 p-6 backdrop-blur-sm">
                 <div className="flex items-start gap-4">
                   <AlertCircle className="h-5 w-5 flex-shrink-0 text-primary mt-1" />
                   <div className="flex-1">
+                    <div className="flex flex-wrap items-center gap-2 mb-1">
+                      <span
+                        className={`text-[10px] font-medium uppercase tracking-wide px-2 py-0.5 rounded ${priorityBadgeClass(
+                          criticalActions[activeActionIndex].priority,
+                        )}`}
+                      >
+                        {criticalActions[activeActionIndex].priority}
+                      </span>
+                    </div>
                     <h3 className="font-semibold text-foreground text-base">{criticalActions[activeActionIndex].title}</h3>
                     <p className="mt-1 text-sm text-foreground/80">{criticalActions[activeActionIndex].description}</p>
                     <p className="mt-3 text-xs text-muted-foreground">{criticalActions[activeActionIndex].timestamp}</p>
@@ -280,6 +311,12 @@ const Page = () => {
           {/* Latest Signals Section */}
           <section>
             <h2 className="mb-4 text-xl font-semibold text-foreground">Latest Signals</h2>
+            {insightsLoadState === 'loading' && (
+              <p className="text-sm text-muted-foreground mb-3">Loading signals from /api/insights…</p>
+            )}
+            {insightsLoadState === 'error' && (
+              <p className="text-sm text-amber-600/90 mb-3">Could not load live insights. Showing offline placeholders.</p>
+            )}
             <div className="space-y-3">
               {newsCategories.map((category) => (
                 <div key={category.id} className="rounded-xl border border-border/30 overflow-hidden backdrop-blur-sm bg-card/50 hover:bg-card/70 transition-colors">
@@ -300,16 +337,44 @@ const Page = () => {
                   {expandedNews === category.id && (
                     <div className="border-t border-border/20 bg-gradient-to-b from-foreground/2 to-transparent p-5">
                       <ul className="space-y-3">
-                        {category.news.map((item, idx) => (
-                          <li key={idx} className="space-y-1 pb-3 border-b border-border/10 last:border-0 last:pb-0">
-                            <p className="font-semibold text-foreground text-sm">{item.headline}</p>
-                            <p className="text-xs text-muted-foreground flex gap-2">
-                              <span className="font-medium text-primary">{item.source}</span>
-                              <span>•</span>
-                              <span>{item.date}</span>
-                            </p>
-                          </li>
-                        ))}
+                        {category.news.map((item, idx) => {
+                          const href =
+                            item.url && /^https?:\/\//i.test(item.url) ? item.url : undefined
+                          return (
+                            <li key={idx} className="space-y-1 pb-3 border-b border-border/10 last:border-0 last:pb-0">
+                              <p className="font-semibold text-foreground text-sm">
+                                {href ? (
+                                  <a
+                                    href={href}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-foreground underline underline-offset-2 decoration-muted-foreground/60 hover:decoration-primary hover:text-primary cursor-pointer"
+                                  >
+                                    {item.headline}
+                                  </a>
+                                ) : (
+                                  item.headline
+                                )}
+                              </p>
+                              <p className="text-xs text-muted-foreground flex flex-wrap gap-2 items-center">
+                                {href ? (
+                                  <a
+                                    href={href}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="font-medium text-primary underline underline-offset-2 decoration-primary/60 hover:decoration-primary cursor-pointer"
+                                  >
+                                    {item.source}
+                                  </a>
+                                ) : (
+                                  <span className="font-medium text-primary">{item.source}</span>
+                                )}
+                                <span>•</span>
+                                <span>{item.date}</span>
+                              </p>
+                            </li>
+                          )
+                        })}
                       </ul>
                     </div>
                   )}
@@ -335,14 +400,29 @@ const Page = () => {
                     </div>
                   </div>
                   
-                  {/* Text-only Body */}
-                  <div className="p-4 space-y-3">
+                  {/* Metrics in a horizontal row — three columns */}
+                  <div className="p-3 sm:p-4 grid grid-cols-3 gap-2 sm:gap-3 min-h-[7rem]">
                     {trend.metrics.map((metric, idx) => (
-                      <div key={idx} className="space-y-1">
-                        <p className="text-muted-foreground text-xs font-medium">{metric.label}</p>
-                        <p className="text-foreground text-base font-bold">{metric.value}</p>
-                        <p className="text-muted-foreground text-xs">{metric.subtext}</p>
-                        <p className="text-primary text-xs font-medium pt-1">{metric.source}</p>
+                      <div
+                        key={idx}
+                        className={`flex flex-col gap-1 text-center min-w-0 ${
+                          idx > 0 ? 'border-l border-border/40 pl-2 sm:pl-3' : ''
+                        }`}
+                      >
+                        <p className="text-muted-foreground text-[10px] sm:text-xs font-medium leading-tight line-clamp-2">
+                          {metric.label}
+                        </p>
+                        <p className="text-foreground text-sm sm:text-base font-bold tabular-nums">{metric.value}</p>
+                        <p className="text-muted-foreground text-[10px] sm:text-xs leading-tight">{metric.subtext}</p>
+                        <a
+                          href={getSectorMetricSourceUrl(trend.title, metric)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-emerald-600 dark:text-emerald-400 text-[10px] sm:text-xs font-medium mt-auto pt-1 line-clamp-1 hover:underline underline-offset-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 rounded-sm inline-block max-w-full"
+                          aria-label={`Open ${metric.source} — ${metric.label} in ${trend.title}`}
+                        >
+                          {metric.source}
+                        </a>
                       </div>
                     ))}
                   </div>
@@ -352,80 +432,9 @@ const Page = () => {
           </section>
 
         </div>
-
-        {/* Chat Sidebar - Right Side */}
-        <aside className="w-80 hidden lg:flex flex-col gap-4">
-          {/* Chat Button - More Visible */}
-          <button
-            onClick={() => setIsChatOpen(!isChatOpen)}
-            className="flex items-center gap-3 w-full rounded-xl border-0 bg-gradient-to-r from-primary to-accent px-5 py-4 text-left hover:shadow-lg transition-all text-white"
-          >
-            <MessageSquare className="h-5 w-5 flex-shrink-0" />
-            <div className="flex-1 min-w-0">
-              <p className="font-semibold text-sm">SCM Assistant</p>
-            </div>
-            <ChevronRight className="h-4 w-4" />
-          </button>
-
-          {/* Chat Input - Top */}
-          <div className="rounded-xl border border-border/50 bg-card/60 backdrop-blur-sm p-4">
-            <form onSubmit={handleChatSubmit} className="flex items-center gap-2">
-              <input
-                type="text"
-                aria-label="Ask anything"
-                value={chatInput}
-                onChange={(e) => setChatInput(e.target.value)}
-                placeholder="Ask anything..."
-                className="flex-1 rounded-xl border border-border/70 bg-background/70 px-4 py-4 text-sm placeholder:text-muted-foreground/90 placeholder:font-medium focus:outline-none focus:ring-2 focus:ring-primary/70 focus:border-transparent transition-all hover:bg-background/90"
-              />
-              <button
-                type="submit"
-                className="rounded-lg bg-gradient-to-r from-primary to-accent p-2 text-white hover:shadow-lg transition-all flex items-center justify-center text-xs font-semibold flex-shrink-0"
-              >
-                <Send className="h-4 w-4" />
-              </button>
-            </form>
-          </div>
-
-          {/* Chat Suggestions */}
-          <div className="rounded-xl border border-border/30 bg-card/50 backdrop-blur-sm p-4">
-            <p className="text-xs font-semibold text-muted-foreground mb-3 uppercase">Suggested Today</p>
-            <div className="space-y-2">
-              {chatSuggestions.map((suggestion, idx) => {
-                const Icon = suggestion.icon
-                return (
-                  <button
-                    key={idx}
-                    className="w-full text-left text-xs p-3 rounded-lg bg-background hover:bg-primary/10 transition-colors flex items-center gap-2 text-foreground hover:text-primary"
-                  >
-                    <Icon className="h-4 w-4 flex-shrink-0" />
-                    <span className="line-clamp-2">{suggestion.text}</span>
-                  </button>
-                )
-              })}
-            </div>
-          </div>
-
-          {/* Chat History */}
-          <div className="rounded-xl border border-border/30 bg-card/50 backdrop-blur-sm p-4">
-            <p className="text-xs font-semibold text-muted-foreground mb-3 uppercase flex items-center gap-2">
-              <Archive className="h-4 w-4" />
-              Recent
-            </p>
-            <div className="space-y-2">
-              {chatHistory.map((chat, idx) => (
-                <button
-                  key={idx}
-                  className="w-full text-left text-xs p-3 rounded-lg bg-background hover:bg-muted transition-colors text-foreground"
-                >
-                  <p className="line-clamp-1 font-medium">{chat.title}</p>
-                  <p className="text-muted-foreground text-xs mt-1">{chat.time}</p>
-                </button>
-              ))}
-            </div>
-          </div>
-        </aside>
       </main>
+
+      <ScmAssistant criticalActions={criticalActions} newsCategories={newsCategories} trends={trends} />
     </div>
   )
 }

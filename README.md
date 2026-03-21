@@ -24,6 +24,38 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
+## Environment variables (`/.env.local`)
+
+Latest Signals and **Today's Critical Actions** (`/api/insights`) are generated together from **NewsData.io** + **NewsAPI.org** article context via the configured OpenAI model (with sensible fallbacks if validation fails).
+
+Example env:
+
+```bash
+OPENAI_API_KEY=sk-...
+OPENAI_MODEL=gpt-4.1-mini
+
+# Primary news (NewsData.io — use the "latest" endpoint; free tier uses `size` 1–10 per request)
+NEWS1_API_URL=https://newsdata.io/api/1/latest
+NEWS1_API_KEY=your_newsdata_api_key
+# Optional; default is `apikey` (NewsData.io)
+# NEWS1_API_KEY_PARAM=apikey
+
+# Second news provider (NewsAPI.org — `from` / `to` are added automatically for a 48h window)
+NEWS2_API_URL=https://newsapi.org/v2/everything
+NEWS2_API_KEY=your_newsapi_key
+# NEWS2_API_KEY_PARAM=apiKey
+
+# Optional tuning
+# NEWS_PROVIDER_TIMEOUT_MS=15000
+# INSIGHTS_CACHE_SECONDS=90
+```
+
+### SCM Assistant (`/api/chat`)
+
+Click **Assistant** (floating button, bottom-right) to open a wide panel (ChatGPT-style): **sidebar** (New chat + recent history), **main column** with centered messages (`max-w-3xl`), and a **bottom composer**. **Close** (X) or **Escape** or backdrop click dismisses it. **Pop out** opens `/chat` in a larger window. **Last five** chats persist in **`localStorage`** (`scm-assistant-sessions-v1`) on this device only.
+
+If you still point `NEWS1_API_URL` at **GNews**, set `NEWS1_API_KEY_PARAM` to what that API expects (often `token`).
+
 ## Learn More
 
 To learn more, take a look at the following resources:
