@@ -43,8 +43,13 @@ jobs:
         run: pnpm build
         env:
           # Placeholders so `next build` can compile; APIs still need real keys at runtime.
+          SKIP_AUTH: "true"
           OPENAI_API_KEY: ci-placeholder
           NEWS1_API_URL: https://example.com
           NEWS1_API_KEY: ci-placeholder
           NEWS2_API_URL: https://example.com
           NEWS2_API_KEY: ci-placeholder
+          AUTH_SECRET: ci-ci-ci-ci-ci-ci-ci-ci-ci-ci-ci-ci-ci-ci-ci
+          SITE_ACCESS_PASSWORD: ci
+          UPSTASH_REDIS_REST_URL: https://example.upstash.io
+          UPSTASH_REDIS_REST_TOKEN: ci-placeholder-token

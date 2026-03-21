@@ -1,5 +1,6 @@
 'use client'
 
+import { redirectToLoginIfUnauthorized } from '@/lib/auth/client'
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import Link from 'next/link'
 import { formatDistanceToNow } from 'date-fns'
@@ -156,6 +157,7 @@ export function ScmAssistant({ criticalActions, newsCategories, trends, standalo
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: nextMessages, context }),
       })
+      if (redirectToLoginIfUnauthorized(res.status)) return
       const json = (await res.json()) as { reply?: string; error?: string }
       if (!res.ok) {
         throw new Error(json.error || `Request failed (${res.status})`)

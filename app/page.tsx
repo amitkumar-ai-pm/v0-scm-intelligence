@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { AlertCircle, ChevronDown, User, Bell, Download } from 'lucide-react'
+import { AlertCircle, ChevronDown, Bell, Download, LogOut } from 'lucide-react'
+import { redirectToLoginIfUnauthorized } from '@/lib/auth/client'
 import { ScmAssistant } from '@/components/scm-assistant'
 import { SECTOR_TRENDS } from '@/lib/sector-trends'
 import type { CriticalAction, InsightsResponse, NewsCategory, SectorTrendMetric } from '@/lib/scm-types'
@@ -28,6 +29,7 @@ const Page = () => {
       setInsightsLoadState('loading')
       try {
         const res = await fetch('/api/insights', { cache: 'no-store' })
+        if (redirectToLoginIfUnauthorized(res.status)) return
         if (!res.ok) throw new Error(`API request failed: ${res.status}`)
         const json = (await res.json()) as InsightsResponse
         setData(json)
@@ -97,6 +99,14 @@ const Page = () => {
         : 'bg-amber-500/15 text-amber-800 dark:text-amber-200 border border-amber-500/25'
 
   const trends = SECTOR_TRENDS
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' })
+    } finally {
+      window.location.href = '/login'
+    }
+  }
 
   /** Shown only if /api/insights fails — 5 items & 7 categories to mirror API shape (placeholders, not live). */
   const fallbackNewsCategories: NewsCategory[] = [
@@ -235,8 +245,13 @@ const Page = () => {
               <button className="p-2 hover:bg-muted rounded-lg transition-colors text-muted-foreground hover:text-foreground" title="Notifications">
                 <Bell className="h-5 w-5" />
               </button>
-              <button className="p-2 hover:bg-muted rounded-lg transition-colors text-muted-foreground hover:text-foreground" title="User Profile">
-                <User className="h-5 w-5" />
+              <button
+                type="button"
+                onClick={() => void handleLogout()}
+                className="p-2 hover:bg-muted rounded-lg transition-colors text-muted-foreground hover:text-foreground"
+                title="Sign out"
+              >
+                <LogOut className="h-5 w-5" />
               </button>
             </div>
           </div>

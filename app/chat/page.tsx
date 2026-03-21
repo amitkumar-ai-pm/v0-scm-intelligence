@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { redirectToLoginIfUnauthorized } from '@/lib/auth/client'
 import { ScmAssistant } from '@/components/scm-assistant'
 import { SECTOR_TRENDS } from '@/lib/sector-trends'
 import type { CriticalAction, InsightsResponse, NewsCategory } from '@/lib/scm-types'
@@ -15,6 +16,7 @@ export default function ChatPage() {
     ;(async () => {
       try {
         const res = await fetch('/api/insights', { cache: 'no-store' })
+        if (redirectToLoginIfUnauthorized(res.status)) return
         const json = (await res.json()) as InsightsResponse
         if (!cancelled) {
           setCriticalActions(json.criticalActions ?? [])
