@@ -46,7 +46,7 @@ function unauthorized(request: NextRequest, pathname: string) {
   return NextResponse.redirect(url)
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   if (process.env.NODE_ENV === 'development' && process.env.SKIP_AUTH === 'true') {

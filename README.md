@@ -20,7 +20,7 @@ This repository is linked to a [v0](https://v0.app) project. You can continue de
 | **API** | `app/api/insights/route.ts` — fetches two news providers, calls OpenAI for categories + critical actions, uses `unstable_cache` with configurable TTL. `app/api/chat/route.ts` — assistant chat with dashboard context. |
 | **Data** | NewsData.io–style + NewsAPI.org–style feeds (URLs configurable); **Zod** validation; **OpenAI** for structured JSON. |
 | **Static** | `lib/sector-trends.ts`, `lib/scm-types.ts` — sector trend series and shared types. |
-| **Access** | **Path 2 (private):** `middleware.ts` — shared password → **HttpOnly JWT** cookie (`jose`); **Upstash** rate limits (global + `/api/auth/login`). Production **requires** `AUTH_SECRET`, `SITE_ACCESS_PASSWORD`, Upstash. |
+| **Access** | **Path 2 (private):** `proxy.ts` (Next.js “proxy” convention) — shared password → **HttpOnly JWT** cookie (`jose`); **Upstash** rate limits (global + `/api/auth/login`). Production **requires** `AUTH_SECRET`, `SITE_ACCESS_PASSWORD`, Upstash. |
 
 ```text
 Browser → Next.js (App Router) → Route handlers → OpenAI / News APIs
@@ -59,7 +59,7 @@ This app can run **behind a shared password** with **rate limits** (not suitable
 | Mechanism | What it does |
 |-----------|----------------|
 | **`/login`** | User enters `SITE_ACCESS_PASSWORD`. On success, server sets an **HttpOnly, Secure (prod), SameSite=Lax** cookie with a **signed JWT** (`AUTH_SECRET` ≥ 32 chars). |
-| **Middleware** | All routes except `/login`, `/api/auth/login`, `/api/auth/logout` require a valid session. APIs return **401 JSON** (no HTML redirect) for `fetch` callers. |
+| **Proxy** (`proxy.ts`) | All routes except `/login`, `/api/auth/login`, `/api/auth/logout` require a valid session. APIs return **401 JSON** (no HTML redirect) for `fetch` callers. |
 | **Upstash Redis** | **~120 requests / minute / IP** globally; **~5 login attempts / 15 min / IP** to slow brute force. **Required in production** — create a free database at [Upstash](https://console.upstash.com) and add REST URL + token to Vercel. |
 | **`SKIP_AUTH`** | If `SKIP_AUTH=true` **and** `NODE_ENV=development`, the gate is **disabled** (local dev only). **Never** set `SKIP_AUTH=true` on Vercel Production. |
 | **Sign out** | Header button (log out icon) calls `POST /api/auth/logout` and returns to `/login`. |
