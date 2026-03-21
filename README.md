@@ -24,6 +24,31 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
+## Deploy (Vercel)
+
+1. Push this repo to GitHub (already done if you’re reading this from the remote).
+2. In [Vercel](https://vercel.com) → **Add New…** → **Project** → **Import** your GitHub repository `amitkumar-ai-pm/v0-scm-intelligence`.
+3. **Framework Preset:** Next.js (auto-detected). **Build Command:** `pnpm build` (or leave default if Vercel detects `pnpm`). **Output:** default (`.next`).
+4. Under **Environment Variables**, add the same keys you use locally (see [Environment variables](#environment-variables-envlocal) below). Use **Production**, **Preview**, and **Development** as needed—at minimum set them for **Production**.
+5. **Deploy**. After the first deploy, open the production URL; the dashboard and `/api/insights` should work once keys are valid.
+
+**Tips**
+
+- Never commit `.env.local`; keep secrets only in Vercel (and local).
+- If the build fails, run `pnpm build` locally and fix errors before redeploying.
+- Optional: assign a custom domain under **Project → Settings → Domains**.
+
+## Branch protection (GitHub)
+
+Do this in the repo on GitHub: **Settings** → **Branches** → **Add branch protection rule** (or **Add rule**).
+
+- **Branch name pattern:** `main`
+- Enable **Require a pull request before merging** (optional but recommended for teams).
+- Enable **Require status checks to pass** after you add CI (e.g. `pnpm lint` / `pnpm build`).
+- Enable **Do not allow bypassing the above settings** for admins if you want strict enforcement.
+
+This cannot be turned on from the git CLI—you configure it in the GitHub UI.
+
 ## Environment variables (`/.env.local`)
 
 Latest Signals and **Today's Critical Actions** (`/api/insights`) are generated together from **NewsData.io** + **NewsAPI.org** article context via the configured OpenAI model (with sensible fallbacks if validation fails).
