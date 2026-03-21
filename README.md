@@ -1,35 +1,77 @@
 # v0-scm-intelligence
 
+**Supply chain intelligence dashboard** — news-backed signals, AI-generated critical actions, sector trends, PDF export, and an embedded SCM assistant (Next.js App Router, TypeScript, Tailwind CSS).
+
+[![CI](https://github.com/amitkumar-ai-pm/v0-scm-intelligence/actions/workflows/ci.yml/badge.svg)](https://github.com/amitkumar-ai-pm/v0-scm-intelligence/actions/workflows/ci.yml)
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [v0](https://v0.app).
 
 ## Built with v0
 
-This repository is linked to a [v0](https://v0.app) project. You can continue developing by visiting the link below -- start new chats to make changes, and v0 will push commits directly to this repo. Every merge to `main` will automatically deploy.
+This repository is linked to a [v0](https://v0.app) project. You can continue developing by visiting the link below — start new chats to make changes, and v0 will push commits directly to this repo. Every merge to `main` can trigger CI and (if connected) deploy.
 
 [Continue working on v0 →](https://v0.app/chat/projects/prj_hW0DgQN0L8otcgBRp19KSbgRhm0x)
 
-## Getting Started
+## Architecture
 
-First, run the development server:
+| Layer | Role |
+|--------|------|
+| **UI** | `app/page.tsx` — dashboard (critical actions, latest signals, sector trends, PDF export). `app/chat/page.tsx` + `components/scm-assistant.tsx` — assistant UI with sidebar, composer, and local session history. |
+| **API** | `app/api/insights/route.ts` — fetches two news providers, calls OpenAI for categories + critical actions, uses `unstable_cache` with configurable TTL. `app/api/chat/route.ts` — assistant chat with dashboard context. |
+| **Data** | NewsData.io–style + NewsAPI.org–style feeds (URLs configurable); **Zod** validation; **OpenAI** for structured JSON. |
+| **Static** | `lib/sector-trends.ts`, `lib/scm-types.ts` — sector trend series and shared types. |
+
+```text
+Browser → Next.js (App Router) → Route handlers → OpenAI / News APIs
+                ↓
+         Vercel Analytics (optional)
+```
+
+## Scripts
+
+| Command | Purpose |
+|---------|---------|
+| `pnpm dev` | Local development server |
+| `pnpm lint` | ESLint (flat config + `eslint-config-next`) |
+| `pnpm typecheck` | `tsc --noEmit` |
+| `pnpm build` | Production build (`next build`) |
+| `pnpm start` | Run production server after `build` |
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
+cp .env.example .env.local   # Windows: copy .env.example .env.local
+# Edit .env.local with real API keys
+
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Production checklist (portfolio / resume)
+
+1. **Secrets:** Copy `/.env.example` → `.env.local` and fill in keys; never commit `.env.local`.
+2. **Quality gate:** `pnpm lint` → `pnpm typecheck` → `pnpm build` (mirrors CI).
+3. **Deploy:** Push to GitHub; set the same variables in Vercel (or your host) — see [Deploy (Vercel)](#deploy-vercel).
+4. **CI:** Confirm the [CI workflow](.github/workflows/ci.yml) is green on `main`.
+5. **Optional:** Enable [branch protection](#branch-protection-github) and require the **quality** check.
+
+## CI (GitHub Actions)
+
+On every **push** and **pull request** to `main`, the workflow runs:
+
+1. `pnpm install --frozen-lockfile`
+2. `pnpm lint`
+3. `pnpm typecheck`
+4. `pnpm build` (with placeholder env vars so the build compiles without real secrets)
 
 ## Deploy (Vercel)
 
 1. Push this repo to GitHub (already done if you’re reading this from the remote).
 2. In [Vercel](https://vercel.com) → **Add New…** → **Project** → **Import** your GitHub repository `amitkumar-ai-pm/v0-scm-intelligence`.
 3. **Framework Preset:** Next.js (auto-detected). **Build Command:** `pnpm build` (or leave default if Vercel detects `pnpm`). **Output:** default (`.next`).
-4. Under **Environment Variables**, add the same keys you use locally (see [Environment variables](#environment-variables-envlocal) below). Use **Production**, **Preview**, and **Development** as needed—at minimum set them for **Production**.
+4. Under **Environment Variables**, add the same keys as in `.env.example` / `.env.local`. Use **Production**, **Preview**, and **Development** as needed — at minimum set them for **Production**.
 5. **Deploy**. After the first deploy, open the production URL; the dashboard and `/api/insights` should work once keys are valid.
 
 **Tips**
@@ -44,16 +86,18 @@ Do this in the repo on GitHub: **Settings** → **Branches** → **Add branch pr
 
 - **Branch name pattern:** `main`
 - Enable **Require a pull request before merging** (optional but recommended for teams).
-- Enable **Require status checks to pass** after you add CI (e.g. `pnpm lint` / `pnpm build`).
+- Enable **Require status checks to pass** after CI is on `main` — select the **`quality`** job from the **CI** workflow.
 - Enable **Do not allow bypassing the above settings** for admins if you want strict enforcement.
 
-This cannot be turned on from the git CLI—you configure it in the GitHub UI.
+This cannot be turned on from the git CLI — you configure it in the GitHub UI.
 
 ## Environment variables (`/.env.local`)
 
 Latest Signals and **Today's Critical Actions** (`/api/insights`) are generated together from **NewsData.io** + **NewsAPI.org** article context via the configured OpenAI model (with sensible fallbacks if validation fails).
 
-Example env:
+**Template:** see [`.env.example`](./.env.example) in the repo (safe to commit).
+
+Example:
 
 ```bash
 OPENAI_API_KEY=sk-...
@@ -81,12 +125,12 @@ Click **Assistant** (floating button, bottom-right) to open a wide panel (ChatGP
 
 If you still point `NEWS1_API_URL` at **GNews**, set `NEWS1_API_KEY_PARAM` to what that API expects (often `token`).
 
-## Learn More
+## Learn more
 
 To learn more, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-- [v0 Documentation](https://v0.app/docs) - learn about v0 and how to use it.
+- [Next.js Documentation](https://nextjs.org/docs) — learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) — an interactive Next.js tutorial.
+- [v0 Documentation](https://v0.app/docs) — learn about v0 and how to use it.
 
 <a href="https://v0.app/chat/api/kiro/clone/amitkumar-ai-pm/v0-scm-intelligence" alt="Open in Kiro"><img src="https://pdgvvgmkdvyeydso.public.blob.vercel-storage.com/open%20in%20kiro.svg?sanitize=true" /></a>

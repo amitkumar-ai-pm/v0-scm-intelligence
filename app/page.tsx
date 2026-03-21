@@ -212,7 +212,7 @@ const Page = () => {
         html2canvas: { scale: 2 },
         jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' },
       }
-      // @ts-ignore
+      // @ts-expect-error html2pdf is injected by html2pdf.js CDN bundle at runtime
       html2pdf().set(opt).from(element).save()
     }
     document.head.appendChild(script)
@@ -252,7 +252,7 @@ const Page = () => {
         <div id="dashboard-content" className="flex-1 space-y-8">
           {/* Critical Actions - Scrollable Carousel */}
           <section>
-            <h2 className="mb-4 text-xl font-semibold text-foreground">Today's Critical Actions</h2>
+            <h2 className="mb-4 text-xl font-semibold text-foreground">Today&apos;s Critical Actions</h2>
             {insightsLoadState === 'loading' && (
               <p className="text-xs text-muted-foreground mb-2">Personalizing actions from latest news signals…</p>
             )}

@@ -645,7 +645,6 @@ function buildFinalCategories(
 function sanitizeNewsCategories(
   raw: unknown,
   categoryTemplate: Array<{ id: string; title: string }>,
-  combinedArticles: NormalizedArticle[],
 ): z.infer<typeof NewsCategorySchema>[] {
   const rawList =
     raw && typeof raw === 'object' && Array.isArray((raw as any).newsCategories)
@@ -804,8 +803,7 @@ async function generateLlmInsights(args: {
     throw new Error('OpenAI returned non-JSON content')
   }
 
-  const combinedArticles = [...args.articles1, ...args.articles2]
-  const sanitized = sanitizeNewsCategories(parsed, categories, combinedArticles)
+  const sanitized = sanitizeNewsCategories(parsed, categories)
   const validatedNews = z.array(NewsCategorySchema).safeParse(sanitized)
   const newsCategories = validatedNews.success
     ? validatedNews.data
